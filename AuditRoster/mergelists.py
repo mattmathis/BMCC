@@ -37,7 +37,7 @@ def main():
       addrcounts[addr] += 1
 
   # read to googlegroup members
-  f = open("contraburners2019.csv", 'r')
+  f = open("contraburners2020.csv", 'r')
   f.readline() # discard the title
   email = csv.DictReader(f)
 
@@ -68,11 +68,11 @@ def main():
       continue
     a1 = r['Preferred email address'].lower()
     a2 = r['Google email address'].lower()
-    if (a1 not in listaddrs) and (a2 not in listaddrs):
-      if a2:
-        print "  %s <%s>,"%(r['Name'], a2)
-      else:
-        print "  %s <%s>,"%(r['Name'], a1)
+    if a1 and (a1 not in listaddrs):
+      print "  %s <%s>,"%(r['Name'], a1)
+    if a2 and (a1 != a2) and (a2 not in listaddrs):
+      print "  %s <%s>,"%(r['Name'], a2)
 
+    (a1 not in listaddrs)
 if __name__ == "__main__":
   main()
