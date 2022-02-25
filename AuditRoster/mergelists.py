@@ -16,9 +16,9 @@ def ok(dgs):
   return (digit in invited)
 
 def main():
-  verbose = True
+  verbose = False
 
-  # read the camp roster and canonicalize it
+  # read the camp roster and canonicalize it (no output)
   f = open("roster.csv", 'r')
 #  f.readline() # discard comment about tickets
   roster = csv.DictReader(f)
@@ -36,33 +36,47 @@ def main():
       rosteraddrs[addr] = r['Ticket status']
       addrcounts[addr] += 1
 
-  # read to googlegroup members
-  f = open("contraburners2020.csv", 'r')
+  # read to googlegroup members (no output)
+  f = open("contraburners2021.csv", 'r')
   f.readline() # discard the title
-  email = csv.DictReader(f)
+  ggroup = csv.DictReader(f)
+  listaddrs = {}
+  for l in ggroup:
+    a = l['Email address'].lower()
+    listaddrs[a] = l['Nickname']
 
   # Generate a gmail pattern match
-  pattern = ''
-  sep = '( '
+  pattern="( contraburner-board@googlegroups.com OR contraburner-organizers@googlegroups.com " +\
+      "OR contraburners2021@googlegroups.com OR burningman.org or contraburners.org"
+  stoplist={"matt.mathis@gmail.com", "mattmathis@gmail.com"}
+  sep = ' OR '
   for addr in rosteraddrs:
-    pattern += sep + addr
-    sep = ' OR '
+    if addr not in stoplist:
+      pattern += sep + addr
   pattern += ' )'
   print 'Gmail match: '+pattern
 
-  listaddrs = {}
-  print "Google group member registration statuses:"
-  for l in email:
-    a = l['Email address'].lower()
-    listaddrs[a] = True
-    if a not in rosteraddrs:
-      print "Not registered:  %s <%s>,"%(l['Nickname'], a)
-    elif not ok(rosteraddrs[a]):
-      print "Extra:           %s <%s> (code:%s)"%(l['Nickname'], a, rosteraddrs[a])
-    elif verbose:
-      print "Present (%d):         %s <%s>,"%(addrcounts[a], l['Nickname'], a)
+  print "\nGoogle group members who are registered as not participating"
+  for a, nick in listaddrs.items():
+    if a in rosteraddrs and not ok(rosteraddrs[a]):
+      print "Extra:           %s <%s> (code:%s)"%(nick, a, rosteraddrs[a])
 
-  print "Missing from Google group"
+  print "\nGoogle group members who are properly registered"
+  people, emails = 0,0
+  for a, nick in listaddrs.items():
+    if a in rosteraddrs and ok(rosteraddrs[a]):
+      people += 1
+      emails += addrcounts[a]
+      if verbose:
+        print "Present (%d):         %s <%s>,"%(addrcounts[a], nick, a)
+  print "(%d people having %d total email addresses)"%(people,emails)
+
+  print "\nGoogle group members who are not registered"
+  for a, nick in listaddrs.items():
+    if a not in rosteraddrs:
+      print "%s <%s>,"%(nick, a)
+
+  print "\nRegistered email but missing from Google group"
   for r in rows:
     if not ok(r['Ticket status']):
       continue
@@ -73,6 +87,5 @@ def main():
     if a2 and (a1 != a2) and (a2 not in listaddrs):
       print "  %s <%s>,"%(r['Name'], a2)
 
-    (a1 not in listaddrs)
 if __name__ == "__main__":
   main()
