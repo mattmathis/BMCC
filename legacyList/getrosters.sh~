@@ -12,14 +12,14 @@ roster20="https://docs.google.com/spreadsheets/d/1ylJqm0vBadCqNqCxZ2ew9BSZ8E_UYi
 roster21="https://docs.google.com/spreadsheets/d/1abmr0w6gLQMneMdWzXIgdv2bDW5DFTSUrV-CC8SUzsU"
 roster22="https://docs.google.com/spreadsheets/d/1K8z7hpk0ZXSGP6lHdepIxO6Ax73byZYY5yW4ksm1IPs"
 
-# echo "Fetch Roster" (must be "anybody with link")
+echo "Fetch Roster"
 wget "$roster22/export?format=csv" -O roster.csv
 
 if [ -f $listfile ]; then
   echo "Updating mailing list"
   mv $listfile .
 else
-  echo "Keeping existing previously fetched mailing list rm $mailinglist"
+  echo "Keeping existing previously fetched mailing list"
 fi
 
 ./mergelists.py

@@ -4,12 +4,10 @@
  contraburners*.csv - Camp mailing list
 """
 
-# BEWARE the year is hard coded in 2 places
-
 import csv
 import collections
 
-invited = "012"
+invited = "01234"
 
 def ok(dgs):
   if not dgs:
@@ -22,7 +20,7 @@ def main():
 
   # read the camp roster and canonicalize it (no output)
   f = open("roster.csv", 'r')
-  for i in range(6):
+  for i in range(0):
     f.readline() # discard garbage at the top
   roster = csv.DictReader(f)
   rows=[]
@@ -50,7 +48,7 @@ def main():
 
   # Generate a gmail pattern match
   pattern="( contraburner-board@googlegroups.com OR contraburner-organizers@googlegroups.com " +\
-      "OR contraburners2022@googlegroups.com OR burningman.org or contraburners.org"
+      "OR contraburners2021@googlegroups.com OR burningman.org or contraburners.org"
   stoplist={"matt.mathis@gmail.com", "mattmathis@gmail.com"}
   sep = ' OR '
   for addr in rosteraddrs:
@@ -87,10 +85,8 @@ def main():
     a2 = r['Google email address'].lower()
     if a1 and (a1 not in listaddrs) and (a2 not in listaddrs):
       print ("  %s <%s>,"%(r['Name'], a1))
-    if a2 and (a1 != a2) and (a1 not in listaddrs) and (a2 not in listaddrs):
+    if a2 and (a1 != a2) and (a2 not in listaddrs):
       print ("  %s <%s>,"%(r['Name'], a2))
-    if not a1 and not a2:
-      print ("  %s has no email"%(r['Name']))
 
 if __name__ == "__main__":
   main()
